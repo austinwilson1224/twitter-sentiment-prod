@@ -1,8 +1,8 @@
 # from math import e
 from flask import Flask, render_template, request, redirect, url_for
 import tweepy
-# from keys import consumer_key, consumer_secret, access_token, access_token_secret
-# from model import setup, apply_prediction
+from keys import consumer_key, consumer_secret, access_token, access_token_secret
+from model import setup, apply_prediction
 
 # print(consumer_key, consumer_secret, access_token, access_token_secret)
 # authorization
