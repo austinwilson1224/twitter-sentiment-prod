@@ -1,6 +1,6 @@
 # from math import e
 from flask import Flask, render_template, request, redirect, url_for
-# import tweepy
+import tweepy
 # from keys import consumer_key, consumer_secret, access_token, access_token_secret
 # from model import setup, apply_prediction
 
@@ -22,16 +22,16 @@ from flask import Flask, render_template, request, redirect, url_for
 #     tweets = None
 #     print('test')
 
-# tweets = [
-#     {
-#         "id": 1,
-#         "text": 'somestuff'
-#     },
-#     {
-#         "id": 2,
-#         "text": 'someotherstuff'
-#     }
-# ]
+tweets = [
+    {
+        "id": 1,
+        "text": 'somestuff'
+    },
+    {
+        "id": 2,
+        "text": 'someotherstuff'
+    }
+]
 
 
 application = Flask(__name__)
@@ -39,18 +39,29 @@ application = Flask(__name__)
 
 @application.route("/", methods=["GET", "POST"])
 def home():
-    return "<h1>Hello</h1>"
+    # return "<h1>Hello</h1>"
     # if request.method == "POST":
     #     content = request.form['content']
     #     new_status = api.update_status(content)
     #     print(content)
-    # tweet_data = []
+    tweet_data = []
     # try:
     #     tweets = api.user_timeline(name)
         
     # except:
     #     tweets = None
-    # sentiments = []
+    sentiments = []
+    tweets = [
+        {
+            "id": 1,
+            "text": 'somestuff'
+        },
+        {
+            "id": 2,
+            "text": 'someotherstuff'
+        }
+    ]
+    name=None
     # try:
     #     for tweet in tweets:
     #         sentiment = apply_prediction(tweet.text)
@@ -66,7 +77,7 @@ def home():
     # except:
     #     print("something with apply prediction fxn")
 
-    # return render_template("index.html", name=name, tweets=tweets)
+    return render_template("index.html", name=name, tweets=tweets)
 
 
 # @application.route("/tweet:<id>", methods=["GET", "POST"])
