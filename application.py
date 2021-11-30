@@ -18,8 +18,31 @@ import re
 import numpy as np
 import pandas as pd
 import tensorflow as tf
+import pickle
 
 import os
+
+# loading
+with open('static/models/vectorizer.pk', 'rb') as handle:
+    vectorizer = pickle.load(handle)
+
+input_dim = 5000
+model1=Sequential()
+model1.add(Dense(25, input_dim=input_dim,activation='relu'))
+model1.add(Dense(2, activation='softmax'))
+model1.compile(loss='categorical_crossentropy',optimizer='adam')
+model1.load_weights("static/models/model1.hdf5")
+
+def get_predictions(text, model):
+    text = vectorizer.transform([text]).toarray()
+    prediction = model.predict(text)[0]
+    return {
+        'negative': prediction[0],
+        'positive': prediction[1]
+    }
+
+text = 'I really love sentiment analysis. It is the best and I am so happy'
+pred_model1 = str(get_predictions(text, model1))
 
 print(os.getcwd())
 test = str(os.getcwd())
@@ -96,9 +119,9 @@ application = Flask(__name__)
 
 @application.route("/", methods=["GET", "POST"])
 def home():
-    data = pd.read_csv(url_for('static', filename='models/twitter_training.csv'), names=[
-                   "Tweet_ID", "Entity", "Sentiment", "Text"])
-    print(data.iloc[0])
+    # data = pd.read_csv(url_for('models/twitter_training.csv'), names=[
+    #                "Tweet_ID", "Entity", "Sentiment", "Text"])
+    # print(data.iloc[0])
     # return "<h1>Hello</h1>"
     # if request.method == "POST":
     #     content = request.form['content']
@@ -137,7 +160,7 @@ def home():
     # except:
     #     print("something with apply prediction fxn")
 
-    return test#str(X[0])#render_template("index.html", name=name, tweets=tweets)
+    return pred_model1#str(X[0])#render_template("index.html", name=name, tweets=tweets)
 
 
 # @application.route("/tweet:<id>", methods=["GET", "POST"])
