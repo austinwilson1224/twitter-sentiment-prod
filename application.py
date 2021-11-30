@@ -19,44 +19,48 @@ import numpy as np
 import pandas as pd
 import tensorflow as tf
 
-data = pd.read_csv('twitter_training.csv', names=[
-                   "Tweet_ID", "Entity", "Sentiment", "Text"])
-data = data[['Text', 'Sentiment']]
-data = data[data.Sentiment != "Neutral"]
-data = data[data.Sentiment != "Irrelevant"]
-data.Text = data.Text.apply(lambda x: str(x).lower())
-data.Text = data.Text.apply((lambda x: re.sub('[^a-zA-z0-9\s]', '', x)))
-nltk.download('punkt')
-nltk.download('stopwords')
-nltk.download('wordnet')
+import os
 
-lemmatiser = WordNetLemmatizer()
-stopwords = set(stopwords.words())
+print(os.getcwd())
+test = str(os.getcwd())
+# data = pd.read_csv('twitter_training.csv', names=[
+#                    "Tweet_ID", "Entity", "Sentiment", "Text"])
+# data = data[['Text', 'Sentiment']]
+# data = data[data.Sentiment != "Neutral"]
+# data = data[data.Sentiment != "Irrelevant"]
+# data.Text = data.Text.apply(lambda x: str(x).lower())
+# data.Text = data.Text.apply((lambda x: re.sub('[^a-zA-z0-9\s]', '', x)))
+# nltk.download('punkt')
+# nltk.download('stopwords')
+# nltk.download('wordnet')
 
-
-def remove_stopwords(ls):
-    ls = [lemmatiser.lemmatize(word) for word in ls if word not in (
-        stopwords) and (word.isalpha())]
-    ls = " ".join(ls)
-    return ls
+# lemmatiser = WordNetLemmatizer()
+# stopwords = set(stopwords.words())
 
 
-data.Text = data.Text.apply(word_tokenize)
-data.Text = data.Text.apply(remove_stopwords)
+# def remove_stopwords(ls):
+#     ls = [lemmatiser.lemmatize(word) for word in ls if word not in (
+#         stopwords) and (word.isalpha())]
+#     ls = " ".join(ls)
+#     return ls
 
-for idx, row in data.iterrows():
-    row[0] = row[0].replace('rt', ' ')
 
-max_features = 1000
-tokenizer = Tokenizer(num_words=max_features, split=' ')
-tokenizer.fit_on_texts(data.Text.values)
-X = tokenizer.texts_to_sequences(data.Text.values)
-X = pad_sequences(X)
+# data.Text = data.Text.apply(word_tokenize)
+# data.Text = data.Text.apply(remove_stopwords)
 
-embed_dim = 128
-lstm_out = 196
+# for idx, row in data.iterrows():
+#     row[0] = row[0].replace('rt', ' ')
 
-print(X)
+# max_features = 1000
+# tokenizer = Tokenizer(num_words=max_features, split=' ')
+# tokenizer.fit_on_texts(data.Text.values)
+# X = tokenizer.texts_to_sequences(data.Text.values)
+# X = pad_sequences(X)
+
+# embed_dim = 128
+# lstm_out = 196
+
+# print(X)
 # print(consumer_key, consumer_secret, access_token, access_token_secret)
 # authorization
 
@@ -92,6 +96,9 @@ application = Flask(__name__)
 
 @application.route("/", methods=["GET", "POST"])
 def home():
+    data = pd.read_csv(url_for('static', filename='models/twitter_training.csv'), names=[
+                   "Tweet_ID", "Entity", "Sentiment", "Text"])
+    print(data.iloc[0])
     # return "<h1>Hello</h1>"
     # if request.method == "POST":
     #     content = request.form['content']
@@ -130,7 +137,7 @@ def home():
     # except:
     #     print("something with apply prediction fxn")
 
-    return str(X[0])#render_template("index.html", name=name, tweets=tweets)
+    return test#str(X[0])#render_template("index.html", name=name, tweets=tweets)
 
 
 # @application.route("/tweet:<id>", methods=["GET", "POST"])
