@@ -2,8 +2,61 @@
 from flask import Flask, render_template, request, redirect, url_for
 import tweepy
 from keys import consumer_key, consumer_secret, access_token, access_token_secret
-from model import data #setup, apply_prediction
+# from model import data #setup, apply_prediction
 
+
+from keras.preprocessing.text import Tokenizer
+from keras.preprocessing.sequence import pad_sequences
+from sklearn.model_selection import train_test_split
+from keras.layers import Dense, Embedding, LSTM, SpatialDropout1D
+from keras.models import Sequential
+from nltk.stem import WordNetLemmatizer
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
+import nltk
+import re
+import numpy as np
+import pandas as pd
+import tensorflow as tf
+
+data = pd.read_csv('twitter_training.csv', names=[
+                   "Tweet_ID", "Entity", "Sentiment", "Text"])
+data = data[['Text', 'Sentiment']]
+data = data[data.Sentiment != "Neutral"]
+data = data[data.Sentiment != "Irrelevant"]
+data.Text = data.Text.apply(lambda x: str(x).lower())
+data.Text = data.Text.apply((lambda x: re.sub('[^a-zA-z0-9\s]', '', x)))
+nltk.download('punkt')
+nltk.download('stopwords')
+nltk.download('wordnet')
+
+lemmatiser = WordNetLemmatizer()
+stopwords = set(stopwords.words())
+
+
+def remove_stopwords(ls):
+    ls = [lemmatiser.lemmatize(word) for word in ls if word not in (
+        stopwords) and (word.isalpha())]
+    ls = " ".join(ls)
+    return ls
+
+
+data.Text = data.Text.apply(word_tokenize)
+data.Text = data.Text.apply(remove_stopwords)
+
+for idx, row in data.iterrows():
+    row[0] = row[0].replace('rt', ' ')
+
+max_features = 1000
+tokenizer = Tokenizer(num_words=max_features, split=' ')
+tokenizer.fit_on_texts(data.Text.values)
+X = tokenizer.texts_to_sequences(data.Text.values)
+X = pad_sequences(X)
+
+embed_dim = 128
+lstm_out = 196
+
+print(X)
 # print(consumer_key, consumer_secret, access_token, access_token_secret)
 # authorization
 
@@ -77,7 +130,7 @@ def home():
     # except:
     #     print("something with apply prediction fxn")
 
-    return render_template("index.html", name=name, tweets=tweets)
+    return str(X[0])#render_template("index.html", name=name, tweets=tweets)
 
 
 # @application.route("/tweet:<id>", methods=["GET", "POST"])

@@ -12,42 +12,44 @@ import numpy as np
 import pandas as pd
 import tensorflow as tf
 
+from flask import url_for
+
 data = pd.read_csv('twitter_training.csv', names=[
                    "Tweet_ID", "Entity", "Sentiment", "Text"])
-# data = data[['Text', 'Sentiment']]
-# data = data[data.Sentiment != "Neutral"]
-# data = data[data.Sentiment != "Irrelevant"]
-# data.Text = data.Text.apply(lambda x: str(x).lower())
-# data.Text = data.Text.apply((lambda x: re.sub('[^a-zA-z0-9\s]', '', x)))
-# nltk.download('punkt')
-# nltk.download('stopwords')
-# nltk.download('wordnet')
+data = data[['Text', 'Sentiment']]
+data = data[data.Sentiment != "Neutral"]
+data = data[data.Sentiment != "Irrelevant"]
+data.Text = data.Text.apply(lambda x: str(x).lower())
+data.Text = data.Text.apply((lambda x: re.sub('[^a-zA-z0-9\s]', '', x)))
+nltk.download('punkt')
+nltk.download('stopwords')
+nltk.download('wordnet')
 
-# lemmatiser = WordNetLemmatizer()
-# stopwords = set(stopwords.words())
-
-
-# def remove_stopwords(ls):
-#     ls = [lemmatiser.lemmatize(word) for word in ls if word not in (
-#         stopwords) and (word.isalpha())]
-#     ls = " ".join(ls)
-#     return ls
+lemmatiser = WordNetLemmatizer()
+stopwords = set(stopwords.words())
 
 
-# data.Text = data.Text.apply(word_tokenize)
-# data.Text = data.Text.apply(remove_stopwords)
+def remove_stopwords(ls):
+    ls = [lemmatiser.lemmatize(word) for word in ls if word not in (
+        stopwords) and (word.isalpha())]
+    ls = " ".join(ls)
+    return ls
 
-# for idx, row in data.iterrows():
-#     row[0] = row[0].replace('rt', ' ')
 
-# max_features = 1000
-# tokenizer = Tokenizer(num_words=max_features, split=' ')
-# tokenizer.fit_on_texts(data.Text.values)
-# X = tokenizer.texts_to_sequences(data.Text.values)
-# X = pad_sequences(X)
+data.Text = data.Text.apply(word_tokenize)
+data.Text = data.Text.apply(remove_stopwords)
 
-# embed_dim = 128
-# lstm_out = 196
+for idx, row in data.iterrows():
+    row[0] = row[0].replace('rt', ' ')
+
+max_features = 1000
+tokenizer = Tokenizer(num_words=max_features, split=' ')
+tokenizer.fit_on_texts(data.Text.values)
+X = tokenizer.texts_to_sequences(data.Text.values)
+X = pad_sequences(X)
+
+embed_dim = 128
+lstm_out = 196
 
 # model = Sequential([
 #     Embedding(max_features, embed_dim, input_length=X.shape[1]),
